@@ -1,0 +1,30 @@
+version: 2
+
+models:
+  - name: prices_latest
+    description: "Latest available price per ticker, derived from stg_prices."
+    columns:
+      - name: ticker
+        description: "Ticker symbol of the financial instrument."
+        tests:
+          - not_null
+          - unique
+
+      - name: date
+        description: "Most recent date available for this ticker."
+        tests:
+          - not_null
+
+      - name: close
+        description: "Closing price on the latest available date."
+        tests:
+          - not_null
+
+      - name: high
+        description: "Highest price on the latest available date."
+
+      - name: low
+        description: "Lowest price on the latest available date."
+
+      - name: volume
+        description: "Trading volume on the latest available date."

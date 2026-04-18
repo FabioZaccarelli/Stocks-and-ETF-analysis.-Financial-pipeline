@@ -18,7 +18,7 @@ latest_date_per_ticker as (
 
 final as (
     select  latest_date_per_ticker.ticker, 
-            latest_date_per_ticker.latest_date,
+            latest_date_per_ticker.latest_date as date,
             prices.open,
             prices.high,
             prices.low,
