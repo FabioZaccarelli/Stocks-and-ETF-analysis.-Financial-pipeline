@@ -28,3 +28,45 @@ models:
 
       - name: volume
         description: "Trading volume on the latest available date."
+  - name: prices_daily
+    description: "Cleaned daily historical prices for each ticker."
+    columns:
+     - name: date
+       tests:
+        - not_null
+     - name: ticker
+       tests:
+        - not_null
+     - name: close
+       tests:
+        - not_null
+  - name: prices_with_sma
+    description: "Daily prices enriched with 20-day Simple Moving Average."
+    columns:
+    - name: date
+      tests:
+        - not_null
+    - name: ticker
+      tests:
+        - not_null
+    - name: sma_20
+      description: "20-day simple moving average of the closing price."
+  - name: prices_with_indicators
+    description: "Daily prices enriched with SMA, EMA and RSI."
+    columns:
+      - name: date
+        tests:
+          - not_null
+      - name: ticker
+        tests:
+          - not_null
+      - name: sma_20
+        description: "20-day simple moving average of the closing price."
+      - name: ema_20
+        description: "20-day exponential moving average of the closing price (approximation)."
+      - name: rsi_14
+        description: "14-day Relative Strength Index based on gains and losses."
+
+        
+      
+        
