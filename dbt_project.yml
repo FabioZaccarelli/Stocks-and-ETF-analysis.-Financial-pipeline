@@ -1,0 +1,17 @@
+name: 'stocks_etf_analysis'
+version: '1.0.0'
+config-version: 2
+
+profile: 'default'
+
+model-paths: ["models"]
+analysis-paths: ["analysis"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+models:
+  stocks_etf_analysis:
+    +schema: analytics
+    +materialized: view
