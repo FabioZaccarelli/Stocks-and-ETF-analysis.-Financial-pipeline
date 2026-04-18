@@ -1,0 +1,21 @@
+version: 2
+
+sources:
+  - name: raw
+    database: etf-and-stock-analysis
+    schema: raw
+    tables:
+      - name: raw_prices
+        columns:
+          - name: date
+            tests:
+            - not_null
+          - name: ticker
+            tests:
+            - not_null
+          - name: close
+            tests:
+            - not_null
+            
+
+              
