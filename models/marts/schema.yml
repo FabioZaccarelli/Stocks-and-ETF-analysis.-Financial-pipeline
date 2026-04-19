@@ -1,72 +1,159 @@
 version: 2
 
 models:
+
+  # ============================
+  # PRICES_LATEST
+  # ============================
   - name: prices_latest
-    description: "Latest available price per ticker, derived from stg_prices."
+    description: |
+      Latest available price per ticker.
+      Questo modello restituisce una sola riga per ogni ticker, selezionando
+      la data più recente disponibile nello staging. È utile per dashboard,
+      alerting e analisi snapshot.
     columns:
       - name: ticker
-        description: "Ticker symbol of the financial instrument."
+        description: "Ticker univoco dello strumento finanziario."
         tests:
           - not_null
           - unique
 
       - name: date
-        description: "Most recent date available for this ticker."
+        description: "Data più recente disponibile per il ticker."
         tests:
           - not_null
 
       - name: close
-        description: "Closing price on the latest available date."
+        description: "Prezzo di chiusura nell'ultima data disponibile."
         tests:
           - not_null
 
       - name: high
-        description: "Highest price on the latest available date."
+        description: "Prezzo massimo nell'ultima data disponibile."
 
       - name: low
-        description: "Lowest price on the latest available date."
+        description: "Prezzo minimo nell'ultima data disponibile."
 
       - name: volume
-        description: "Trading volume on the latest available date."
+        description: "Volume scambiato nell'ultima data disponibile."
+
+  # ============================
+  # PRICES_DAILY
+  # ============================
   - name: prices_daily
-    description: "Cleaned daily historical prices for each ticker."
-    columns:
-     - name: date
-       tests:
-        - not_null
-     - name: ticker
-       tests:
-        - not_null
-     - name: close
-       tests:
-        - not_null
-  - name: prices_with_sma
-    description: "Daily prices enriched with 20-day Simple Moving Average."
-    columns:
-    - name: date
-      tests:
-        - not_null
-    - name: ticker
-      tests:
-        - not_null
-    - name: sma_20
-      description: "20-day simple moving average of the closing price."
-  - name: prices_with_indicators
-    description: "Daily prices enriched with SMA, EMA and RSI."
+    description: |
+      Storico giornaliero pulito dei prezzi per ogni ticker.
+      Questo modello normalizza i dati raw e li rende consistenti
+      per analisi time-series e calcolo di indicatori tecnici.
     columns:
       - name: date
+        description: "Data del prezzo."
         tests:
           - not_null
-      - name: ticker
-        tests:
-          - not_null
-      - name: sma_20
-        description: "20-day simple moving average of the closing price."
-      - name: ema_20
-        description: "20-day exponential moving average of the closing price (approximation)."
-      - name: rsi_14
-        description: "14-day Relative Strength Index based on gains and losses."
 
-        
-      
-        
+      - name: ticker
+        description: "Ticker dello strumento."
+        tests:
+          - not_null
+
+      - name: close
+        description: "Prezzo di chiusura giornaliero."
+        tests:
+          - not_null
+
+  # ============================
+  # PRICES_WITH_SMA
+  # ============================
+  - name: prices_with_sma
+    description: |
+      Daily prices enriched with 20-day Simple Moving Average.
+      Modello legacy per calcolo SMA.
+    columns:
+      - name: date
+        description: "Data del prezzo."
+        tests:
+          - not_null
+
+      - name: ticker
+        description: "Ticker dello strumento."
+        tests:
+          - not_null
+
+      - name: sma_20
+        description: "Simple Moving Average a 20 periodi."
+
+  # ============================
+  # STAGING
+  # ============================
+  - name: stg_prices
+    description: |
+      Staging dei prezzi raw.
+      Questo modello applica pulizia minima, casting dei tipi e
+      normalizzazione dei campi. È la base per tutti i modelli successivi.
+    columns:
+      - name: date
+        description: "Data del prezzo."
+        tests:
+          - not_null
+
+      - name: ticker
+        description: "Ticker dello strumento."
+        tests:
+          - not_null
+
+      - name: close
+        description: "Prezzo di chiusura."
+        tests:
+          - not_null
+
+  # ============================
+  # PRICES DAILY INCREMENTAL
+  # ============================
+  - name: prices_daily_incremental
+    description: |
+      Modello incrementale che costruisce lo storico giornaliero dei prezzi.
+      Carica solo le nuove date, migliorando performance e costi.
+      È la base per tutti i modelli di indicatori tecnici.
+    columns:
+      - name: date
+        description: "Data del prezzo."
+        tests:
+          - not_null
+
+      - name: ticker
+        description: "Ticker dello strumento."
+        tests:
+          - not_null
+
+      - name: close
+        description: "Prezzo di chiusura."
+        tests:
+          - not_null
+
+  # ============================
+  # PRICES WITH INDICATORS
+  # ============================
+  - name: prices_with_indicators
+    description: |
+      Modello che arricchisce i prezzi giornalieri con indicatori tecnici:
+      SMA, EMA e RSI. È pensato per analisi quantitative, dashboard e
+      strategie di trading.
+    columns:
+      - name: date
+        description: "Data del prezzo."
+        tests:
+          - not_null
+
+      - name: ticker
+        description: "Ticker dello strumento."
+        tests:
+          - not_null
+
+      - name: sma_20
+        description: "Simple Moving Average a 20 periodi."
+
+      - name: ema_20
+        description: "Exponential Moving Average a 20 periodi."
+
+      - name: rsi_14
+        description: "Relative Strength Index a 14 periodi (può essere NULL nelle prime righe)."
